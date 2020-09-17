@@ -12,6 +12,7 @@ import packageJson from './package.json'
 
 let projectPath: string = ''
 
+// cli 命令
 const program = new Commander.Command(packageJson.name)
   .version(packageJson.version)
   .arguments('<project-directory>')
@@ -46,7 +47,7 @@ async function run(): Promise<void> {
   if (typeof projectPath === 'string') {
     projectPath = projectPath.trim()
   }
-
+  // 项目名 不存在 让再输入
   if (!projectPath) {
     const res = await prompts({
       type: 'text',
@@ -66,7 +67,7 @@ async function run(): Promise<void> {
       projectPath = res.path.trim()
     }
   }
-
+  // 还是不存在 退出进程
   if (!projectPath) {
     console.log()
     console.log('Please specify the project directory:')
@@ -85,7 +86,7 @@ async function run(): Promise<void> {
 
   const resolvedProjectPath = path.resolve(projectPath)
   const projectName = path.basename(resolvedProjectPath)
-
+  // 否是有效的npm软件包名称。
   const { valid, problems } = validateNpmName(projectName)
   if (!valid) {
     console.error(
@@ -98,6 +99,7 @@ async function run(): Promise<void> {
     process.exit(1)
   }
 
+  // exmaple 后面要跟项目名
   if (program.example === true) {
     console.error(
       'Please provide an example name or url, otherwise remove the example option.'
@@ -115,6 +117,7 @@ async function run(): Promise<void> {
       examplePath: program.examplePath,
     })
   } catch (reason) {
+    // 不是下载失败 抛出错误
     if (!(reason instanceof DownloadError)) {
       throw reason
     }
@@ -134,7 +137,7 @@ async function run(): Promise<void> {
     await createApp({ appPath: resolvedProjectPath, useNpm: !!program.useNpm })
   }
 }
-
+// 检查最新的create-next-app
 const update = checkForUpdate(packageJson).catch(() => null)
 
 async function notifyUpdate(): Promise<void> {
