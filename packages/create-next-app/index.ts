@@ -167,7 +167,7 @@ async function notifyUpdate(): Promise<void> {
 }
 
 run()
-  .then(notifyUpdate)
+  .then(notifyUpdate) // 成功后 通知是否要更新
   .catch(async (reason) => {
     console.log()
     console.log('Aborting installation.')
@@ -178,7 +178,7 @@ run()
       console.log(reason)
     }
     console.log()
-
+    // 失败后 通知是否要更新
     await notifyUpdate()
 
     process.exit(1)
